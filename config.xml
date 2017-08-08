@@ -80,6 +80,7 @@
     <engine name="android" spec="^6.2.3" />
     <plugin name="cordova-plugin-console" spec="^1.0.5" />
     <plugin name="cordova-plugin-device" spec="^1.1.4" />
+    <plugin name="cordova-plugin-geolocation" spec="^2.4.3" />
     <plugin name="cordova-plugin-googlemaps" spec="git+https://github.com/mapsplugin/cordova-plugin-googlemaps.git#multiple_maps">
         <variable name="API_KEY_FOR_ANDROID" value="AIzaSyDBHq4K1KSZOY74KAWG3Yk4ITe-rkBD2u8" />
         <variable name="API_KEY_FOR_IOS" value="AIzaSyDBHq4K1KSZOY74KAWG3Yk4ITe-rkBD2u8" />
