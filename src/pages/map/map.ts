@@ -35,43 +35,78 @@ export class MapPage {
     private googleMaps: GoogleMaps,
     public platform: Platform) {
 
-      this.initializeObservables();
+      platform.ready().then(() => {
+        this.initializeObservables();
+        this.initializeSubscriptions();
+        this.loadMap(0, 0, []);
+      });
+  }
 
-    platform.ready().then(() => {
-      console.log('consultando getCurrentPosition');
-      let options = { timeout: 10000, enableHighAccuracy: true, maximumAge: 3600 };
-      this.geolocation.getCurrentPosition(options)
-        .then(({ coords: { latitude, longitude } }) => {
-          api.getNearbyBusiness(latitude, longitude, 3000).subscribe(({ data }) => {
-            console.log(latitude, longitude, data.nearbyBusinesses);
-          });
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-
-      this.loadMap(0, 0, []);
+  initializeSubscriptions() {
+    this.userPosition.subscribe(({coords: {latitude, longitude}}) => {
+      this.centerLocation(latitude, longitude);
+    });
+    this.nearbyBusinesses.subscribe(businesses => {
+      this.addMarkers(businesses);
     });
   }
 
   initializeObservables() {
-    this.nearbyBusinesses = new Observable<Business[]>();
     this.userPosition     = this.initUserPositionObserver();
+    this.nearbyBusinesses = this.initNearbyBusinessesObserver();
+  }
+
+  initNearbyBusinessesObserver() : Observable<Business[]> {
+    const nearbyBusinesses = new Subject<Business[]>();
+    this.userPosition.subscribe(({coords: {latitude, longitude}}) => {
+      this.api
+        .getNearbyBusiness(latitude, longitude, 3000)
+        .subscribe(b => nearbyBusinesses.next(b.data.nearbyBusinesses));
+    })
+    return nearbyBusinesses.asObservable();
   }
 
   initUserPositionObserver() : Observable<Geoposition> {
+    const options      = { timeout: 10000, enableHighAccuracy: true, maximumAge: 3600 };
     const userPosition = new Subject<Geoposition>();
 
     this.geolocation
-      .getCurrentPosition()
+      .getCurrentPosition(options)
       .then(p => userPosition.next(p))
-      .catch(e => userPosition.next());
+      .catch(e => userPosition.next({timestamp: 0,coords: {latitude: -23.617995,longitude:-46.614015, accuracy: 0, altitude: 0, altitudeAccuracy: 0, heading: 0, speed: 0}}));
 
     return userPosition.asObservable();
   }
 
-  getUserPosition() {
+  centerLocation(lat: number, lng: number) {
+    console.log(lat, lng, `location`)
+    // create CameraPosition
+    let position: CameraPosition<any> = {
+      target: {
+        lat, lng
+      },
+      zoom: 18,
+      tilt: 30
+    };
 
+    // move the map's camera to position
+    this.map.moveCamera(position);
+  }
+
+  addMarkers(businesses: Business[]) {
+    this.map.clear();
+    businesses.forEach(marker => {
+      const coordinates = marker.coordinates.split(',').map(parseFloat);
+      this.map.addMarker({
+        title: marker.name,
+        icon: 'blue',
+        animation: 'DROP',
+        position: {
+          lat: coordinates[0],
+          lng: coordinates[1]
+        }
+      })
+    });
   }
 
   loadMap(lat, lng, markers) {

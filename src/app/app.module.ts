@@ -7,7 +7,8 @@ import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { MapPage } from '../pages/map/map';
 import { TabsPage } from '../pages/tabs/tabs';
-import { SharedModule }   from '../shared/shared.module';
+import { LoginComponent } from '../pages/login/login.component';
+import { SharedModule } from '../shared/shared.module';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -15,7 +16,7 @@ import { Geolocation } from '@ionic-native/geolocation';
 import { GoogleMaps } from '@ionic-native/google-maps';
 import { ApiProvider } from '../providers/api/api';
 
-const networkInterface = createNetworkInterface({uri : 'http://192.168.56.1:3000/graphql'});
+const networkInterface = createNetworkInterface({ uri: 'http://192.168.1.34:3000/graphql' });
 
 networkInterface.use([{
   applyMiddleware(req, next) {
@@ -29,7 +30,7 @@ networkInterface.use([{
 }]);
 
 const apolloClient = new ApolloClient({
-    networkInterface
+  networkInterface
 });
 
 export function provideClient(): ApolloClient {
@@ -38,6 +39,7 @@ export function provideClient(): ApolloClient {
 
 @NgModule({
   declarations: [
+    LoginComponent,
     MyApp,
     MapPage,
     TabsPage
@@ -46,10 +48,11 @@ export function provideClient(): ApolloClient {
     BrowserModule,
     ApolloModule.forRoot(provideClient),
     IonicModule.forRoot(MyApp),
-    SharedModule
+    SharedModule,
   ],
   bootstrap: [IonicApp],
   entryComponents: [
+    LoginComponent,
     MapPage,
     MyApp,
     TabsPage
@@ -59,8 +62,8 @@ export function provideClient(): ApolloClient {
     SplashScreen,
     Geolocation,
     GoogleMaps,
-    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    { provide: ErrorHandler, useClass: IonicErrorHandler },
     ApiProvider
   ]
 })
-export class AppModule {}
+export class AppModule { }
