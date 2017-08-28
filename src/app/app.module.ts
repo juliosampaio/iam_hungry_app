@@ -9,6 +9,8 @@ import { MapPage } from '../pages/map/map';
 import { TabsPage } from '../pages/tabs/tabs';
 import { LoginComponent } from '../pages/login/login.component';
 import { SharedModule } from '../shared/shared.module';
+import { OAuthModule } from '../pages/oauth/oauth.module';
+import { Config } from '../config';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -48,6 +50,7 @@ export function provideClient(): ApolloClient {
     BrowserModule,
     ApolloModule.forRoot(provideClient),
     IonicModule.forRoot(MyApp),
+    OAuthModule,
     SharedModule,
   ],
   bootstrap: [IonicApp],
@@ -58,6 +61,7 @@ export function provideClient(): ApolloClient {
     TabsPage
   ],
   providers: [
+    Config,
     StatusBar,
     SplashScreen,
     Geolocation,

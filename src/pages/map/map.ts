@@ -36,6 +36,7 @@ export class MapPage {
     public platform: Platform) {
 
       platform.ready().then(() => {
+        console.log('inicializando mapa,,,');
         this.initializeObservables();
         this.initializeSubscriptions();
         this.loadMap(0, 0, []);
@@ -47,6 +48,7 @@ export class MapPage {
       this.centerLocation(latitude, longitude);
     });
     this.nearbyBusinesses.subscribe(businesses => {
+      console.log('businesses', businesses);
       this.addMarkers(businesses);
     });
   }
