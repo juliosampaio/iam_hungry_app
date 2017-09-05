@@ -8,6 +8,7 @@ import { MyApp } from './app.component';
 import { MapPage } from '../pages/map/map';
 import { TabsPage } from '../pages/tabs/tabs';
 import { LoginComponent } from '../pages/login/login.component';
+import { LoginService } from '../pages/login/login.service';
 import { SharedModule } from '../shared/shared.module';
 import { OAuthModule } from '../pages/oauth/oauth.module';
 import { Config } from '../config';
@@ -18,7 +19,7 @@ import { Geolocation } from '@ionic-native/geolocation';
 import { GoogleMaps } from '@ionic-native/google-maps';
 import { ApiProvider } from '../providers/api/api';
 
-const networkInterface = createNetworkInterface({ uri: 'http://192.168.1.34:3000/graphql' });
+const networkInterface = createNetworkInterface({ uri: 'http://192.168.1.32:3000/graphql' });
 
 networkInterface.use([{
   applyMiddleware(req, next) {
@@ -67,7 +68,8 @@ export function provideClient(): ApolloClient {
     Geolocation,
     GoogleMaps,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
-    ApiProvider
+    ApiProvider,
+    LoginService
   ]
 })
 export class AppModule { }

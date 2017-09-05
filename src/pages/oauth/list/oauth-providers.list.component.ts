@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { OAuthService } from '../oauth.service';
 
-import { TabsPage } from '../../tabs/tabs'
+import { IOauthLoginLister } from '../oauth.listener.interface';
 
 @Component({
 	selector: 'oauth-providers-list',
@@ -11,15 +11,19 @@ import { TabsPage } from '../../tabs/tabs'
 })
 export class OAuthProvidersListComponent {
 
-	constructor(private oauthService: OAuthService, private nav: NavController) {
+	@Input('listener')
+	private loginListener: IOauthLoginLister;
+
+	constructor(private oauthService: OAuthService) {
 		this.oauthService = oauthService;
 	}
 
 	public login(source: string) {
 		this.oauthService.login(source)
 			.then(
-				() => this.nav.setRoot(TabsPage),
-				error => alert(error)
-			);
+				(res) => this.loginListener.onLogin(res),
+				(err) => this.loginListener.onLoginError(err)
+			)
+			.catch((err) => this.loginListener.onCatch(err));
 	}
 }

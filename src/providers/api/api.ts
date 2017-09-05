@@ -29,6 +29,28 @@ const signinUser = gql`
   }
 `;
 
+const userExistsMutation = gql`
+  mutation userExistsMutation($email: String!){
+    userExists(email: $email)
+  }
+`;
+
+const createUserMutation = gql`
+  mutation createUserMutarion($name: String!, $email: String!, $password: String!){
+    createUser(
+      name: $name,
+      authProvider: {
+        email: {
+          email: $email,
+          password: $password
+        }
+      }
+    ){
+      token
+    }
+  }
+`;
+
 
 @Injectable()
 export class ApiProvider {
@@ -44,11 +66,24 @@ export class ApiProvider {
     });
   }
 
-  signinUser() : any {
-    console.log('signinUser ...', this.apollo)
+  signinUser(email, password) : Promise<any> {
     return this.apollo.mutate({
       mutation  : signinUser,
       variables : {email: 'marge.simpson@gmail.coms', password: 'test123',}
-    });
+    }).map( r => (<any>r.data).signinUser.token).toPromise();
+  }
+
+  userExists(email: string): Observable<any> {
+    return this.apollo.mutate({
+      mutation  : userExistsMutation,
+      variables : {email}
+    }).map((r) => (<any>r.data).userExists);
+  }
+
+  createUser(name, email, password): Promise<any> {
+    return this.apollo.mutate({
+      mutation  : createUserMutation,
+      variables : {name, email, password}
+    }).map(r => (<any>r.data).createUser.token).toPromise();
   }
 }

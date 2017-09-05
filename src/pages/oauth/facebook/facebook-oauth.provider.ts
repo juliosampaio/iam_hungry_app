@@ -9,6 +9,7 @@ interface ILoginResponse {
     access_token: string;
 }
 interface IProfileResponse {
+    id: string;
     first_name: string;
     last_name: string;
     email: string;
@@ -34,12 +35,13 @@ export class FacebookOauthProvider implements IOathProvider {
     }
 
     getProfile(accessToken): Promise<any> {
-        let query = `access_token=${accessToken}&format=json`;
+        let query = `access_token=${accessToken}&fields=${this.config.facebook.fields.join()}&format=json`;
         let url = `${this.config.facebook.apiUrl}me?${query}`;
         return this.http.get(url)
             .map(x => x.json())
             .map((x: IProfileResponse) => {
                 let profile: OAuthProfile = {
+                    providerId: x.id,
                     firstName: x.first_name,
                     lastName: x.last_name,
                     email: x.email,
